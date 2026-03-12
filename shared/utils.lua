@@ -3,7 +3,6 @@ local Utils <const>, IsServerSide <const> = {
     CancelledTimeouts = {},
 }, IsDuplicityVersion()
 
--- Call Backs
 if not IsServerSide then
     Utils.TriggerServerCallback = function(name, cb, ...)
         lib.callback(name, false, cb, ...)
@@ -50,8 +49,6 @@ else
         lib.callback(name, playerId, cb, ...)
     end
 end
-
--- Other
 
 Utils.Math = {
     Round = function(value, numDecimalPlaces)

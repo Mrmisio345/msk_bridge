@@ -83,14 +83,14 @@ local function SendToWebhook(webhook, data)
             color = 0x049CEF,
             author = {
                 name = 'MSK Scripts • Logs',
-                icon_url = 'https://upload.peakrp.pl/static/msk_logo.png',
+                icon_url = 'https://upload.peakrp.pl/static/mskscripts/logo_bg.png',
             },
 
             title = '📋  ' .. string.upper(data.name or 'LOG'),
             description = data.message or '',
             fields = {},
             thumbnail = {
-                url = 'https://upload.peakrp.pl/static/msk_logo.png',
+                url = 'https://upload.peakrp.pl/static/mskscripts/logo_bg.png',
             },
 
             image = {
@@ -99,7 +99,7 @@ local function SendToWebhook(webhook, data)
 
             footer = {
                 text = '🕐 MSK Scripts • ' .. os.date('%d.%m.%Y • %H:%M:%S'),
-                icon_url = 'https://upload.peakrp.pl/static/msk_logo.png',
+                icon_url = 'https://upload.peakrp.pl/static/mskscripts/logo_bg.png',
             },
 
             timestamp = os.date('!%Y-%m-%dT%H:%M:%SZ'),
@@ -128,7 +128,7 @@ local function SendToWebhook(webhook, data)
         end
     end, 'POST', json.encode({
         username = 'MSK Scripts Logs',
-        avatar_url = 'https://upload.peakrp.pl/static/msk.png',
+        avatar_url = 'https://upload.peakrp.pl/static/mskscripts/logo_bg.png',
         embeds = embeds,
     }), { ['Content-Type'] = 'application/json' })
 end

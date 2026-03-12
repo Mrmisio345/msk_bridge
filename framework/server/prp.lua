@@ -105,7 +105,7 @@ Provider.SendLog = function(...)
     PRP.SendLog(...)
 end
 
-Provider.GetVehicleNumberPlateText = function(...) -- NEW
+Provider.GetVehicleNumberPlateText = function(...) 
     return PRP.GetVehicleNumberPlateText(...)
 end
 
@@ -137,7 +137,7 @@ Provider.GetPlayers = function()
     return PRP.GetPlayers()
 end
 
-Provider.SetPlayerSession = function(playerId, session) -- NEW
+Provider.SetPlayerSession = function(playerId, session) 
     SetPlayerRoutingBucket(playerId, session)
     TriggerClientEvent('prp:setBucket', playerId, session)
 end

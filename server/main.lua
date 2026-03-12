@@ -18,7 +18,7 @@ if not Provider['SendLog'] then
 end
 
 Provider.CheckVersion = function()
-    local resourceName <const> = GetInvokingResource()
+    local resourceName <const> = GetInvokingResource() or GetCurrentResourceName()
     if not resourceName then 
         return print(("^1[%s] ^7Failed to determine resource name for version check^0"):format(GetCurrentResourceName()))
     end
@@ -126,4 +126,6 @@ MySQL.ready(function()
         'server',
         'loaded'
     ))
+
+    Provider.CheckVersion()
 end)

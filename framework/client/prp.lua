@@ -164,10 +164,6 @@ Provider.ShowHelpNotification = function(name, msg)
     Core.ShowHelpNotification(name, msg)
 end
 
-Provider.ShowFloatingHelpNotification = function(msg, fncData)
-    Core.ShowFloatingHelpNotification(msg, fncData)
-end
-
 Provider.GetVehicleLabel = function(model) 
     local customName <const> = exports['prp_vmaxblocker']:getVehicleLabel(model)
     local name = 'Brak danych'
@@ -222,10 +218,6 @@ end
 
 Provider.ToggleBelt = function(toggle) 
     TriggerEvent('prp_dzwon:belt', toggle)
-end
-
-Provider.StartProgressBar = function(data) 
-    Core.StartProgressBar(data)
 end
 
 return Provider

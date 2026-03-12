@@ -7,17 +7,15 @@ RegisterNetEvent('esx:playerLoaded', function(xPlayer)
     end
 
     PlayerData = xPlayer
-    TriggerEvent('msk_scripts:playerLoaded') -- NEW
+    TriggerEvent('msk_scripts:playerLoaded') 
 end)
 
 RegisterNetEvent('esx:setJob', function(job)
     PlayerData.job = job
-    TriggerEvent('msk_scripts:updatedJob') -- NEW
+    TriggerEvent('msk_scripts:updatedJob') 
 end)
 
--- Handlers
-
-AddEventHandler('msk_garages:hideHud', function(toggle) -- NEW
+AddEventHandler('msk_garages:hideHud', function(toggle) 
     TriggerEvent('radar:setHidden', toggle)
 end)
 
@@ -29,7 +27,7 @@ Provider.GetPlayerData = function()
     return PlayerData
 end
 
-Provider.GetPlayerGroup = function() -- NEW
+Provider.GetPlayerGroup = function() 
     return PlayerData.group or 'user'
 end
 
@@ -37,15 +35,15 @@ Provider.GetCharId = function()
     return PlayerData.identifier or ''
 end
 
-Provider.GetJob = function() -- NEW
+Provider.GetJob = function()
     return PlayerData?.job?.name or 'unemployed'
 end
 
-Provider.GetExtraJob = function() -- NEW
+Provider.GetExtraJob = function()
     return 'unemployed' -- ESX doesn't support extra jobs
 end
 
-Provider.HaveJob = function(jobName) -- NEW
+Provider.HaveJob = function(jobName) 
     local job <const> = Provider.GetJob()
     if job == jobName then
         return true
@@ -54,7 +52,7 @@ Provider.HaveJob = function(jobName) -- NEW
     return false
 end
 
-Provider.GetItem = function(itemName) -- NEW
+Provider.GetItem = function(itemName) 
     if PlayerData.inventory then
         for _, data in ipairs(PlayerData.inventory) do
             if data and data.name == itemName then
@@ -72,7 +70,7 @@ Provider.GetItem = function(itemName) -- NEW
     }
 end
 
-Provider.GetAccount = function(accountName) -- NEW
+Provider.GetAccount = function(accountName) 
     if PlayerData.accounts then
         for _, data in ipairs(PlayerData.accounts) do
             if data and data.name == accountName then

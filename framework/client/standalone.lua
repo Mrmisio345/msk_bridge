@@ -111,7 +111,7 @@ Provider.DeleteVehicle = function(vehicle)
     end
 end
 
-Provider.SpawnVehicle = function(modelName, spawnCoords, heading, saveSpawned, cb) -- NEW
+Provider.SpawnVehicle = function(modelName, spawnCoords, heading, saveSpawned, cb) 
     local model <const> = type(modelName) == 'number' and modelName or GetHashKey(modelName)
 
     RequestModel(model)

@@ -7,15 +7,13 @@ Provider.GetPlayer = function(playerId)
     end
 
     return {
-        -- Variables
         source = playerId,
         playerId = playerId,
         identifier = xPlayer.identifier,
-        charid = xPlayer.identifier, -- Legacy
+        charid = xPlayer.identifier,
         group = xPlayer.group,
         job = xPlayer.job,
 
-        -- Functions
         triggerEvent = function(eventName, ...)
             TriggerClientEvent(eventName, playerId, ...)
         end,
@@ -49,7 +47,7 @@ Provider.GetPlayer = function(playerId)
         end,
 
         getPlayerJobs = function()
-            return { xPlayer.job } -- ESX ma jeden job
+            return { xPlayer.job }
         end,
 
         getInventoryItem = function(item)

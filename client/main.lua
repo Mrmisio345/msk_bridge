@@ -31,7 +31,6 @@ exports('GetTarget', function()
     return ProviderTarget
 end)
 
--- On Stop
 AddEventHandler('onResourceStop', function(resourceName)
     local invokedResource <const> = GetInvokingResource()
     if invokedResource == GetCurrentResourceName() then
@@ -45,7 +44,6 @@ AddEventHandler('onResourceStop', function(resourceName)
     TriggerEvent('onResourceStop', resourceName)
 end)
 
--- FiveM Joining
 RegisterNetEvent('onPlayerJoining', function(serverId, _, sid)
     if not serverId or not sid then
         return
@@ -69,7 +67,6 @@ RegisterNetEvent('onPlayerDropped', function(serverId)
     TriggerEvent('msk:onPlayerDropped', serverId)
 end)
 
--- Started
 local lines <const> = {
     '^5┌─────────────────────────────────────────────┐^7',
     '^5│^7               ^3MSK BRIDGE^7 ^5v1.0^7               ^5│^7',

@@ -1,4 +1,5 @@
-local Framework <const>, Target <const>, FloatingNotification <const>, ProgressBar <const> in require 'shared.loader'
+local Config <const> = require 'data.config'
+local Framework <const>, Target <const> in require 'shared.loader'
 local Provider <const>, Utils <const> = require(('framework.server.%s'):format(Framework)) or {}, require 'shared.utils'
 
 for key, value in pairs(Utils) do
@@ -121,8 +122,8 @@ MySQL.ready(function()
         table.concat(lines, '\n'),
         Framework or 'standalone',
         Target or 'none',
-        FloatingNotification or 'none',
-        ProgressBar or 'none',
+        Config.FloatingNotification or 'none',
+        Config.ProgressBar or 'none',
         'server',
         'loaded'
     ))

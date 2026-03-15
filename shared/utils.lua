@@ -3,22 +3,38 @@ local Utils <const>, IsServerSide <const> = {
     CancelledTimeouts = {},
 }, IsDuplicityVersion()
 
+local cbHandlers <const> = {}    
+local cbOwners <const> = {}     
+local cbRegistered <const> = {}
+
 if not IsServerSide then
     Utils.TriggerServerCallback = function(name, cb, ...)
         lib.callback(name, false, cb, ...)
     end
 
     Utils.RegisterClientCallback = function(name, cb)
-        lib.callback.register(name, function(...)
-            local p <const> = promise.new()
+        local resource <const> = GetInvokingResource() or GetCurrentResourceName()
+        cbOwners[name] = resource
+        cbHandlers[name] = cb
 
-            cb(function(...)
-                p:resolve({...})
-            end, ...)
+        if not cbRegistered[name] then
+            cbRegistered[name] = true
 
-            local results <const> = Citizen.Await(p)
-            return table.unpack(results)
-        end)
+            lib.callback.register(name, function(...)
+                local handler <const> = cbHandlers[name]
+                if not handler then 
+                    return nil 
+                end
+
+                local p <const> = promise.new()
+                handler(function(...)
+                    p:resolve({...})
+                end, ...)
+
+                local results <const> = Citizen.Await(p)
+                return table.unpack(results)
+            end)
+        end
     end
 
     Utils.Clipboard = function(text)
@@ -33,16 +49,29 @@ if not IsServerSide then
     end
 else
     Utils.RegisterServerCallback = function(name, cb)
-        lib.callback.register(name, function(source, ...)
-            local p <const> = promise.new()
+        local resource <const> = GetInvokingResource() or GetCurrentResourceName()
 
-            cb(source, function(...)
-                p:resolve({...})
-            end, ...)
+        cbOwners[name] = resource
+        cbHandlers[name] = cb
 
-            local results <const> = Citizen.Await(p)
-            return table.unpack(results)
-        end)
+        if not cbRegistered[name] then
+            cbRegistered[name] = true
+
+            lib.callback.register(name, function(source, ...)
+                local handler <const> = cbHandlers[name]
+                if not handler then 
+                    return nil 
+                end
+
+                local p <const> = promise.new()
+                handler(source, function(...)
+                    p:resolve({...})
+                end, ...)
+
+                local results <const> = Citizen.Await(p)
+                return table.unpack(results)
+            end)
+        end
     end
 
     Utils.TriggerClientCallback = function(name, playerId, cb, ...)
@@ -53,7 +82,7 @@ end
 Utils.Math = {
     Round = function(value, numDecimalPlaces)
         if numDecimalPlaces then
-            local power = 10^numDecimalPlaces
+            local power <const> = 10 ^ numDecimalPlaces
             return math.floor((value * power) + 0.5) / (power)
         else
             return math.floor(value + 0.5)
@@ -61,7 +90,7 @@ Utils.Math = {
     end,
     
     GroupDigits = function(value)
-        local left,num,right = string.match(value,'^([^%d]*%d)(%d*)(.-)$')
+        local left <const>, num <const>, right <const> = string.match(value,'^([^%d]*%d)(%d*)(.-)$')
 
         return left..(num:reverse():gsub('(%d%d%d)','%1' .. ' '):reverse())..right
     end,
@@ -78,18 +107,14 @@ Utils.Math = {
 Utils.UUID = function()
     local template <const> ='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
     return string.gsub(template, '[xy]', function(c)
-        local v = (c == 'x') and math.random(0, 0xf) or math.random(8, 0xb)
+        local v <const> = (c == 'x') and math.random(0, 0xf) or math.random(8, 0xb)
         return string.format('%x', v)
     end)
 end
 
 if not IsServerSide then
     Utils.AddKeyBind = function(data)
-        local resource = GetInvokingResource()
-        if not resource then
-            resource = GetCurrentResourceName()
-        end
-        
+        local resource <const> = GetInvokingResource() or GetCurrentResourceName()        
         if data and resource then	
             data.id = resource..'_'..data.id
             
@@ -300,5 +325,14 @@ end
 Utils.ClearTimeout = function(id)
 	Utils.CancelledTimeouts[id] = true
 end
+
+AddEventHandler('onResourceStop', function(resourceName)
+    for name, resource in pairs(cbOwners) do
+        if resource == resourceName then
+            cbHandlers[name] = nil
+            cbOwners[name] = nil
+        end
+    end
+end)
 
 return Utils

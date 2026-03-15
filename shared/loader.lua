@@ -34,33 +34,7 @@ local function DetectTarget()
     return 'standalone'
 end
 
-local function DetectFloatingNotification()
-    if Config.FloatingNotification ~= 'auto' then
-        return Config.FloatingNotification
-    end
-
-    if GetResourceState('msk_interactions') == 'started' then
-        return 'msk_interactions'
-    end
-
-    return 'standalone'
-end
-
-local function DetectProgressBar()
-    if Config.ProgressBar ~= 'auto' then
-        return Config.ProgressBar
-    end
-
-    if GetResourceState('msk_progressbar') == 'started' then
-        return 'msk_progressbar'
-    end
-
-    return 'ox_lib'
-end
-
 return {
     Framework = DetectFramework(),
     Target = DetectTarget(),
-    FloatingNotification = DetectFloatingNotification(),
-    ProgressBar = DetectProgressBar(),
 }

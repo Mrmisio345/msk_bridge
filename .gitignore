@@ -1,0 +1,12 @@
+**/ui/.vscode/
+**/ui/node_modules/
+**/ui/src/
+**/ui/public/
+**/ui/cache/
+**/ui/vite.config.*
+**/ui/webpack.config.*
+**/ui/tsconfig*.json
+**/ui/jsconfig.json
+**/ui/index.html
+**/ui/.env
+**/ui/.env.*

@@ -147,4 +147,17 @@ Provider.TabletCd = function()
     return nil
 end
 
+Provider.GetCounter = function(option)
+    if option == 'admin' then
+        local counts <const>, total = ESX.GetNumPlayers('group', Config.AdminGroups), 0
+        for _, count in pairs(counts) do
+            total = total + count
+        end
+        
+        return total
+    end
+
+    return ESX.GetNumPlayers('job', option)
+end
+
 return Provider

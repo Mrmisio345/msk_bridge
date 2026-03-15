@@ -155,4 +155,9 @@ Provider.TabletCd = function()
     return nil
 end
 
+Provider.GetCounter = function(option)
+    print('[msk_bridge] [standalone] GetCounter is not implemented for option: ' .. tostring(option))
+    return 0
+end
+
 return Provider

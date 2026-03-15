@@ -1,4 +1,5 @@
-local Framework <const>, Target <const>, FloatingNotification <const>, ProgressBar <const> in require 'shared.loader'
+local Config <const> = require 'data.config'
+local Framework <const>, Target <const> in require 'shared.loader'
 local ProviderFramework <const> = require(('framework.client.%s'):format(Framework)) or {}
 
 local Utils <const> = require 'shared.utils'
@@ -86,8 +87,8 @@ print(string.format(
     table.concat(lines, '\n'),
     Framework or 'standalone',
     Target or 'none',
-    FloatingNotification or 'none',
-    ProgressBar or 'none',
+    Config.FloatingNotification or 'none',
+    Config.ProgressBar or 'none',
     'server',
     'loaded'
 ))

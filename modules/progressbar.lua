@@ -1,4 +1,4 @@
-local ProgressBar <const> in require 'shared.loader'
+local ProgressBar <const> in require 'data.config'
 if ProgressBar == 'msk_progressbar' then
     return {
         StartProgressBar = function(data)

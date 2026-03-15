@@ -160,4 +160,8 @@ Provider.TabletCd = function()
     return PRP.TabletCd()
 end
 
+Provider.GetCounter = function(option)
+    return GlobalState.Counter[option] or 0
+end
+
 return Provider

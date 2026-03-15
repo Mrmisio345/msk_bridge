@@ -12,4 +12,10 @@ return {
     ['impound_cash'] = 'https://discord.com/api/webhooks/...',
     ['garage_admin'] = 'https://discord.com/api/webhooks/...',
     ['garage'] = 'https://discord.com/api/webhooks/...',
+
+    -- MSK Dialogs
+    ['dialogs'] = 'https://discord.com/api/webhooks/...',
+
+    -- MSK Sprays
+    ['sprays'] = 'https://discord.com/api/webhooks/...',
 }

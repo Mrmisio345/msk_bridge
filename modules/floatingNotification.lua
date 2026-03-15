@@ -1,4 +1,4 @@
-local FloatingNotification <const> in require 'shared.loader'
+local FloatingNotification <const> in require 'data.config'
 if FloatingNotification == 'msk_interactions' then
     return {
         ShowFloatingHelpNotification = function(data, fncData)
@@ -12,7 +12,6 @@ if FloatingNotification == 'msk_interactions' then
 end
 
 local Floating <const> = {}
-
 local function ShowFloatingHelpNotification(data, fncData)
     if not data or not data.name then
         return

@@ -62,6 +62,12 @@ Provider.GetPlayer = function(playerId)
             xPlayer.addInventoryItem(item, count)
         end,
 
+        addInventoryItemWeapon = function(weaponName, count, ammoCount)
+            for i = 1, count do
+                xPlayer.addWeapon(weaponName, ammoCount)
+            end
+        end,
+
         getLevel = function()
             print('[msk_bridge] [esx] getLevel is not implemented')
             return 0
@@ -129,6 +135,10 @@ Provider.GetPlayers = function()
     return ESX.GetPlayers()
 end
 
+Provider.GetWeapon = function(...)
+    return ESX.GetWeapon(...)
+end
+
 Provider.SetPlayerSession = function(playerId, session)
     SetPlayerRoutingBucket(playerId, session)
 end
@@ -158,6 +168,10 @@ Provider.GetCounter = function(option)
     end
 
     return ESX.GetNumPlayers('job', option)
+end
+
+Provider.BanPlayer = function(playerId, reason)
+    print('[msk_bridge] [esx] BanPlayer is not implemented')
 end
 
 return Provider

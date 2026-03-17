@@ -74,6 +74,10 @@ Provider.GetPlayer = function(playerId)
             print('[msk_bridge] [standalone] addInventoryItem is not implemented for item: ' .. tostring(item))
         end,
 
+        addInventoryItemWeapon = function(weaponName, count, ammoCount)
+            print('[msk_bridge] [standalone] addInventoryItemWeapon is not implemented for weapon: ' .. tostring(weaponName))
+        end,
+
         getLevel = function()
             print('[msk_bridge] [standalone] getLevel is not implemented')
             return 0
@@ -134,6 +138,11 @@ Provider.GetPlayers = function()
     return players
 end
 
+Provider.GetWeapon = function(...)
+    print('[msk_bridge] [standalone] GetWeapon is not implemented')
+    return nil
+end
+
 Provider.SetPlayerSession = function(playerId, session)
     SetPlayerRoutingBucket(playerId, session)
 end
@@ -158,6 +167,10 @@ end
 Provider.GetCounter = function(option)
     print('[msk_bridge] [standalone] GetCounter is not implemented for option: ' .. tostring(option))
     return 0
+end
+
+Provider.BanPlayer = function(playerId, reason)
+    print('[msk_bridge] [standalone] BanPlayer is not implemented')
 end
 
 return Provider

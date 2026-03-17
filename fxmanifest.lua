@@ -28,10 +28,6 @@ files {
     'framework/client/*.*',
     'target/*.*',
 
-    -- server_scripts
-    'framework/server/*.*',
-    'server/logs.lua',
-
     -- modules
     'modules/*.*',
 

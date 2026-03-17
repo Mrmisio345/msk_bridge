@@ -1,5 +1,5 @@
 return {
-    -- Auto-detect or force: 'auto', 'prp', 'esx', 'qbcore', 'standalone'
+    -- Auto-detect or force: 'auto', 'prp', 'esx', 'standalone'
     Framework = 'auto',
 
     -- Auto-detect or 'auto', 'prp_target', 'ox_target', 'standalone'

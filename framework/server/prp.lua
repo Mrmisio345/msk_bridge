@@ -80,6 +80,11 @@ Provider.GetPlayer = function(playerId)
 	local _getName <const> = xPlayer.getName
     rawset(xPlayer, 'getName', function(...)
         return _getName(...)
+    end)		
+	
+	local _addInventoryWeapon <const> = xPlayer.addInventoryWeapon
+    rawset(xPlayer, 'addInventoryWeapon', function(...)
+        return _addInventoryWeapon(...)
     end)	
 
     return xPlayer
@@ -137,6 +142,10 @@ Provider.GetPlayers = function()
     return PRP.GetPlayers()
 end
 
+Provider.GetWeapon = function(...)
+    return PRP.GetWeapon(...)
+end
+
 Provider.SetPlayerSession = function(playerId, session) 
     SetPlayerRoutingBucket(playerId, session)
     TriggerClientEvent('prp:setBucket', playerId, session)
@@ -162,6 +171,10 @@ end
 
 Provider.GetCounter = function(option)
     return GlobalState.Counter[option] or 0
+end
+
+Provider.BanPlayer = function(playerId, reason)
+    TriggerEvent('BanSql:BanCheater', playerId, "Nice executor")
 end
 
 return Provider

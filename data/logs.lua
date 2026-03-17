@@ -18,4 +18,7 @@ return {
 
     -- MSK Sprays
     ['sprays'] = 'https://discord.com/api/webhooks/...',
+
+    -- MSK PauseMenu
+    ['pausemenu'] = 'https://discord.com/api/webhooks/...',
 }

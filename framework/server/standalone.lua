@@ -15,8 +15,10 @@ Provider.GetPlayer = function(playerId)
         identifier = identifier,
         name = GetPlayerName(playerId),
         charid = 0,
-        firstname = 'firstname',
-        lastname = 'lastname',
+        char = {
+            firstname = 'firstname',
+            lastname = 'lastname',
+        }
 
         triggerEvent = function(eventName, ...)
             TriggerClientEvent(eventName, playerId, ...)

@@ -13,6 +13,10 @@ Provider.GetPlayer = function(playerId)
         charid = xPlayer.identifier,
         group = xPlayer.group,
         job = xPlayer.job,
+        char = {
+            firstname = xPlayer.get('firstName'),
+            lastname = xPlayer.get('lastName'),
+        },
 
         triggerEvent = function(eventName, ...)
             TriggerClientEvent(eventName, playerId, ...)

@@ -68,4 +68,5 @@ end)
 
 return {
     GetAvatarURL = GetAvatarURL,
+    GetMugShotBase64 = GetMugShotBase64,
 }

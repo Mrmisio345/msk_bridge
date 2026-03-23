@@ -1,5 +1,5 @@
 local Config <const> = require 'data.config'
-local Framework <const>, Target <const> in require 'shared.loader'
+local Framework <const>, Target <const>, Fuel <const>, ProgressBar <const> in require 'shared.loader'
 local ProviderFramework <const> = require(('framework.client.%s'):format(Framework)) or {}
 
 local Utils <const> = require 'shared.utils'
@@ -11,7 +11,6 @@ end
 
 local Modules <const> = {
     require 'modules.floatingNotification',
-    require 'modules.progressbar',
     require 'modules.avatar',
 }
 
@@ -23,6 +22,13 @@ for _, module in ipairs(Modules) do
     end
 end
 
+local ProviderFuel <const> = require(('fuel.%s'):format(Fuel)) or {}
+ProviderFramework.SetFuel = ProviderFuel.SetFuel
+ProviderFramework.GetFuel = ProviderFuel.GetFuel
+
+local ProviderProgressBar <const> = require(('progressbar.%s'):format(ProgressBar)) or {}
+ProviderFramework.StartProgressBar = ProviderProgressBar.StartProgressBar
+
 exports('GetFramework', function()
     return ProviderFramework
 end)
@@ -30,6 +36,14 @@ end)
 local ProviderTarget <const> = require(('target.%s'):format(Target)) or {}
 exports('GetTarget', function()
     return ProviderTarget
+end)
+
+exports('GetFuel', function()
+    return ProviderFuel
+end)
+
+exports('GetProgressBar', function()
+    return ProviderProgressBar
 end)
 
 AddEventHandler('onResourceStop', function(resourceName)
@@ -70,12 +84,13 @@ end)
 
 local lines <const> = {
     '^5┌─────────────────────────────────────────────┐^7',
-    '^5│^7               ^3MSK BRIDGE^7 ^5v1.0^7               ^5│^7',
+    '^5│^7                 ^3MSK BRIDGE^7                  ^5│^7',
     '^5├─────────────────────────────────────────────┤^7',
     '^5│^7  Framework             ^5→  ^3%-18s^5│^7',
     '^5│^7  Target                ^5→  ^3%-18s^5│^7',
-    '^5│^7  FloatingNotification  ^5→  ^3%-18s^5│^7',
+    '^5│^7  Fuel                  ^5→  ^3%-18s^5│^7',
     '^5│^7  ProgressBar           ^5→  ^3%-18s^5│^7',
+    '^5│^7  FloatingNotification  ^5→  ^3%-18s^5│^7',
     '^5│^7  Side                  ^5→  ^3%-18s^5│^7',
     '^5│^7  Utils                 ^5→  ^2%-18s^5│^7',
     '^5├─────────────────────────────────────────────┤^7',
@@ -87,8 +102,9 @@ print(string.format(
     table.concat(lines, '\n'),
     Framework or 'standalone',
     Target or 'none',
+    Fuel or 'none',
+    ProgressBar or 'none',
     Config.FloatingNotification or 'none',
-    Config.ProgressBar or 'none',
-    'server',
+    'client',
     'loaded'
 ))

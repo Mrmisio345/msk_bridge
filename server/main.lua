@@ -103,30 +103,56 @@ AddEventHandler('onResourceStop', function(resourceName)
 end)
 
 MySQL.ready(function()
-    local lines <const> = {
-        '^5┌─────────────────────────────────────────────┐^7',
-        '^5│^7               ^3MSK BRIDGE^7 ^5v1.0^7               ^5│^7',
-        '^5├─────────────────────────────────────────────┤^7',
-        '^5│^7  Framework             ^5→  ^3%-18s^5│^7',
-        '^5│^7  Target                ^5→  ^3%-18s^5│^7',
-        '^5│^7  FloatingNotification  ^5→  ^3%-18s^5│^7',
-        '^5│^7  ProgressBar           ^5→  ^3%-18s^5│^7',
-        '^5│^7  Side                  ^5→  ^3%-18s^5│^7',
-        '^5│^7  Utils                 ^5→  ^2%-18s^5│^7',
-        '^5├─────────────────────────────────────────────┤^7',
-        '^5│^7         ^2✓ Bridge loaded successfully^7        ^5│^7',
-        '^5└─────────────────────────────────────────────┘^7',
-    }
+    local resourceName <const> = GetCurrentResourceName()
+    local currentVersion <const> = GetResourceMetadata(resourceName, "version", 0) or 'unknown'
+    local url <const> = ("https://raw.githubusercontent.com/Mrmisio345/mskscripts-version/main/%s.json"):format(resourceName)
 
-    print(string.format(
-        table.concat(lines, '\n'),
-        Framework or 'standalone',
-        Target or 'none',
-        Config.FloatingNotification or 'none',
-        Config.ProgressBar or 'none',
-        'server',
-        'loaded'
-    ))
+    PerformHttpRequest(url, function(status, response)
+        local latestVersion, isOutdated = nil, false
 
-    Provider.CheckVersion()
+        if status == 200 and response then
+            local data <const> = json.decode(response)
+            if data and data.version then
+                local function versionToNumber(v)
+                    local n, mult = 0, 1000000
+                    for part in v:gmatch("(%d+)") do
+                        n = n + tonumber(part) * mult
+                        mult = mult / 1000
+                    end
+                    return n
+                end
+                latestVersion = data.version
+                isOutdated = versionToNumber(currentVersion) < versionToNumber(latestVersion)
+            end
+        end
+
+        local lines = {
+            '^5┌─────────────────────────────────────────────┐^7',
+            '^5│^7                 ^3MSK BRIDGE^7                  ^5│^7',
+            '^5├─────────────────────────────────────────────┤^7',
+            ('^5│^7  Framework             ^5→  ^3%-18s^5│^7'):format(Framework or 'standalone'),
+            ('^5│^7  Target                ^5→  ^3%-18s^5│^7'):format(Target or 'none'),
+            ('^5│^7  FloatingNotification  ^5→  ^3%-18s^5│^7'):format(Config.FloatingNotification or 'none'),
+            ('^5│^7  ProgressBar           ^5→  ^3%-18s^5│^7'):format(Config.ProgressBar or 'none'),
+            ('^5│^7  Side                  ^5→  ^3%-18s^5│^7'):format('server'),
+            ('^5│^7  Utils                 ^5→  ^2%-18s^5│^7'):format('loaded'),
+            '^5├─────────────────────────────────────────────┤^7',
+        }
+
+        if isOutdated then
+            lines[#lines + 1] = ('^5│^7  Version               ^5→  ^1%-18s^5│^7'):format(currentVersion)
+            lines[#lines + 1] = ('^5│^7  Latest                ^5→  ^3%-18s^5│^7'):format(latestVersion)
+            lines[#lines + 1] = '^5├─────────────────────────────────────────────┤^7'
+            lines[#lines + 1] = '^5│^7             ^1⚠ Update available              ^5│^7'
+            lines[#lines + 1] = '^5│  ^1 https://github.com/Mrmisio345/msk_bridge  ^5│^7'
+        else
+            lines[#lines + 1] = ('^5│^7  Version               ^5→  ^2%-18s^5│^7'):format(currentVersion)
+            lines[#lines + 1] = '^5├─────────────────────────────────────────────┤^7'
+            lines[#lines + 1] = '^5│^7         ^2✓ Bridge loaded successfully^7        ^5│^7'
+        end
+
+        lines[#lines + 1] = '^5└─────────────────────────────────────────────┘^7'
+
+        print(table.concat(lines, '\n'))
+    end, "GET")
 end)

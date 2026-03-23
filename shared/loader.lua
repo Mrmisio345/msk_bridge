@@ -34,7 +34,61 @@ local function DetectTarget()
     return 'standalone'
 end
 
+local function DetectFuel()
+    if Config.Fuel ~= 'auto' then
+        return Config.Fuel
+    end
+
+    if GetResourceState('ox_fuel') == 'started' then
+        return 'ox_fuel'
+    elseif GetResourceState('Renewed-Fuel') == 'started' then
+        return 'Renewed-Fuel'
+    elseif GetResourceState('lc_fuel') == 'started' then
+        return 'lc_fuel'
+    elseif GetResourceState('cdn-fuel') == 'started' then
+        return 'cdn-fuel'
+    elseif GetResourceState('x-fuel') == 'started' then
+        return 'x-fuel'
+    elseif GetResourceState('qs-fuelstations') == 'started' then
+        return 'qs-fuelstations'
+    elseif GetResourceState('okokGasStation') == 'started' then
+        return 'okokGasStation'
+    elseif GetResourceState('rcore_fuel') == 'started' then
+        return 'rcore_fuel'
+    elseif GetResourceState('myFuel') == 'started' then
+        return 'myFuel'
+    elseif GetResourceState('LegacyFuel') == 'started' then
+        return 'LegacyFuel'
+    elseif GetResourceState('msk_fuel') == 'started' then
+        return 'msk_fuel'
+    end
+
+    return 'none'
+end
+
+local function DetectProgressBar()
+    if Config.ProgressBar ~= 'auto' then
+        return Config.ProgressBar
+    end
+
+    if GetResourceState('msk_progressbar') == 'started' then
+        return 'msk_progressbar'
+    elseif GetResourceState('ox_lib') == 'started' then
+        return 'ox_lib'
+    elseif GetResourceState('esx_progressbar') == 'started' then
+        return 'esx'
+    elseif GetResourceState('progressbar') == 'started' then
+        return 'qb'
+    elseif GetResourceState('qs-interface') == 'started' then
+        return 'qs-interface'
+    end
+
+    return 'none'
+end
+
 return {
     Framework = DetectFramework(),
     Target = DetectTarget(),
+    Fuel = DetectFuel(),
+    ProgressBar = DetectProgressBar(),
 }

@@ -20,13 +20,15 @@ server_scripts {
 ui_page 'ui/dist/index.html'
 
 files {
-	'ui/dist/**/*.*',
-	'ui/dist/*.html',
+    'ui/dist/**/*.*',
+    'ui/dist/*.html',
     'data/*.*',
     
     -- client_scripts
     'framework/client/*.*',
     'target/*.*',
+    'fuel/*.*',
+    'progressbar/*.*',
 
     -- modules
     'modules/*.*',
@@ -35,4 +37,3 @@ files {
     'shared/loader.lua',
     'shared/utils.lua',
 }
-

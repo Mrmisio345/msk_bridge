@@ -1,20 +1,5 @@
-local ProgressBar <const> in require 'data.config'
-if ProgressBar == 'msk_progressbar' then
-    return {
-        StartProgressBar = function(data)
-            if not data then 
-                return 
-            end
-
-            exports['msk_progressbar']:StartProgressBar(data)
-        end,
-    }
-end
-
 local function StartProgressBar(data)
-    if not data then
-        return
-    end
+    if not data then return end
 
     if data.OnStart then
         data.OnStart()

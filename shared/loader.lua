@@ -7,10 +7,12 @@ local function DetectFramework()
 
     if GetResourceState('prp_framework') == 'started' then
         return 'prp'
+    elseif GetResourceState('qbx_core') == 'started' then
+        return 'qbox'
+    elseif GetResourceState('qb-core') == 'started' then
+        return 'qb'
     elseif GetResourceState('es_extended') == 'started' then
         return 'esx'
-    elseif GetResourceState('qb-core') == 'started' then
-        return 'qbcore'
     end
 
     return 'standalone'

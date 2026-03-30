@@ -127,14 +127,8 @@ local function GetVehicleProperties(vehicle)
         local colorPrimary <const>, colorSecondary <const> = GetVehicleColours(vehicle)
         local pearlescentColor <const>, wheelColor <const> = GetVehicleExtraColours(vehicle)		
         local bag <const> = Entity(vehicle)	
-        local fuelLevel = GetVehicleFuelLevel(vehicle)
-        local parts = {}
-        
+        local fuelLevel = GetVehicleFuelLevel(vehicle)        
         if bag then
-            if bag.state.parts then
-                parts = bag.state.parts
-            end		
-
             if bag.state.fuel then
                 fuelLevel = bag.state.fuel		
             end								
@@ -160,7 +154,6 @@ local function GetVehicleProperties(vehicle)
             tankHealth = GetVehiclePetrolTankHealth(vehicle),
             dirtLevel = GetVehicleDirtLevel(vehicle),
             fuelLevel = fuelLevel,
-            parts = parts,
             deformations = deformations,
 
             color1 = colorPrimary,
@@ -290,10 +283,6 @@ local function SetVehicleProperties(vehicle, props, loadDeformation)
         if bag then						
             if props.fitment then
                 bag.state:set('fitment', props.fitment, true)
-            end
-            
-            if props.parts then
-                bag.state:set('parts', props.parts, true)
             end
         end
         

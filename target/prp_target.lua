@@ -4,6 +4,10 @@ target.disableTargeting = function(state)
     exp:disableTargeting(state)
 end
 
+target.isActive = function()
+    return exp:isActive()
+end
+
 target.addGlobalOption = function(data)
     exp:addGlobalOption(data)
 end
@@ -24,12 +28,16 @@ target.addGlobalModel = function(options)
     exp:addGlobalModel(options)
 end
 
-target.removeGlobalPed = function(modelNames)
-    exp:removeGlobalModel(modelNames)
+target.removeGlobalModel = function(optionNames)
+    exp:removeGlobalModel(optionNames)
 end
 
 target.addGlobalPed = function(options)
     exp:addGlobalPed(options)
+end
+
+target.removeGlobalPed = function(optionNames)
+    exp:removeGlobalPed(optionNames)
 end
 
 target.addGlobalVehicle = function(options)
@@ -38,6 +46,14 @@ end
 
 target.removeGlobalVehicle = function(optionNames)
     exp:removeGlobalVehicle(optionNames)
+end
+
+target.addGlobalPlayer = function(options)
+    exp:addGlobalPlayer(options)
+end
+
+target.removeGlobalPlayer = function(optionNames)
+    exp:removeGlobalPlayer(optionNames)
 end
 
 target.addModel = function(models, options)
@@ -78,6 +94,14 @@ end
 
 target.removeZone = function(id)
     exp:removeZone(id)
+end
+
+target.zoneExists = function(id)
+    return exp:zoneExists(id)
+end
+
+target.getTargetOptions = function(entity, _type, model)
+    return exp:getTargetOptions(entity, _type, model)
 end
 
 return target

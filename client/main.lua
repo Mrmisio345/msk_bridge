@@ -29,6 +29,31 @@ ProviderFramework.GetFuel = ProviderFuel.GetFuel
 local ProviderProgressBar <const> = require(('progressbar.%s'):format(ProgressBar)) or {}
 ProviderFramework.StartProgressBar = ProviderProgressBar.StartProgressBar
 
+if GetResourceState('ox_inventory') == 'started' then
+    local trackedItems <const> = {}
+    exports('TrackItem', function(itemName)
+        if itemName and type(itemName) == 'string' and not trackedItems[itemName] then
+            trackedItems[itemName] = exports.ox_inventory:Search('count', itemName) or 0
+        end
+    end)
+
+    CreateThread(function()
+        Wait(5000) 
+
+        while true do
+            for itemName, lastCount in pairs(trackedItems) do
+                local current <const> = exports.ox_inventory:Search('count', itemName) or 0
+                if current ~= lastCount then
+                    trackedItems[itemName] = current
+                    TriggerEvent('msk_scripts:inventoryUpdated', itemName, current)
+                end
+            end
+
+            Wait(500)
+        end
+    end)
+end
+
 exports('GetFramework', function()
     return ProviderFramework
 end)

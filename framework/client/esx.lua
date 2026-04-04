@@ -53,6 +53,14 @@ Provider.HaveJob = function(jobName)
 end
 
 Provider.GetItem = function(itemName) 
+    if GetResourceState('ox_inventory') == 'started' then
+        local count = exports.ox_inventory:Search('count', itemName)
+        return {
+            item = itemName,
+            count = count or 0,
+        }
+    end
+
     if PlayerData.inventory then
         for _, data in ipairs(PlayerData.inventory) do
             if data and data.name == itemName then

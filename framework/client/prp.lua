@@ -37,41 +37,45 @@ RegisterNetEvent('prp:setAccountMoney', function(account)
 end)
 
 RegisterNetEvent('prp:addInventoryItem', function(item)
-	if PlayerData.inventory then		
-		for key, data in ipairs(PlayerData.inventory) do
-			if data and data.name == item.name then			
-				PlayerData.inventory[key] = item			
+    if PlayerData.inventory then		
+        for key, data in ipairs(PlayerData.inventory) do
+            if data and data.name == item.name then			
+                PlayerData.inventory[key] = item			
+                TriggerEvent('msk_scripts:inventoryUpdated', item.name, item.count)
+                return
+            end
+        end
 
-				return
-			end
-		end
-
-		table.insert(PlayerData.inventory, item)				
-	end
+        table.insert(PlayerData.inventory, item)
+        TriggerEvent('msk_scripts:inventoryUpdated', item.name, item.count)
+    end
 end)
 
 RegisterNetEvent('prp:removeInventoryItem', function(item)
-	if PlayerData.inventory then		
-		for key, data in ipairs(PlayerData.inventory) do
-			if data and data.name == item.name then						
-				PlayerData.inventory[key] = item	
+    if PlayerData.inventory then		
+        for key, data in ipairs(PlayerData.inventory) do
+            if data and data.name == item.name then						
+                PlayerData.inventory[key] = item	
+                TriggerEvent('msk_scripts:inventoryUpdated', item.name, item.count)
                 return
-			end
-		end
-		
-		table.insert(PlayerData.inventory, item)
-	end
+            end
+        end
+        
+        table.insert(PlayerData.inventory, item)
+        TriggerEvent('msk_scripts:inventoryUpdated', item.name, item.count)
+    end
 end)
 
 RegisterNetEvent('prp:updateItem', function(item)	
-	if PlayerData.inventory then
-		for key, data in ipairs(PlayerData.inventory) do
-			if data and data.name == item.name then
-				PlayerData.inventory[key] = item
-				break
-			end
-		end
-	end
+    if PlayerData.inventory then
+        for key, data in ipairs(PlayerData.inventory) do
+            if data and data.name == item.name then
+                PlayerData.inventory[key] = item
+                TriggerEvent('msk_scripts:inventoryUpdated', item.name, item.count)
+                break
+            end
+        end
+    end
 end)
 
 AddEventHandler('msk_garages:hideHud', function(toggle)
@@ -116,7 +120,15 @@ Provider.HaveJob = function(jobName)
     return false
 end
 
-Provider.GetItem = function(itemName) 
+Provider.GetItem = function(itemName)
+    if GetResourceState('ox_inventory') == 'started' then
+        local count = exports.ox_inventory:Search('count', itemName)
+        return {
+            item = itemName,
+            count = count or 0,
+        }
+    end
+
     if PlayerData.inventory then
         for _, data in ipairs(PlayerData.inventory) do
             if data and data.name == itemName then

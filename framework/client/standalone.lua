@@ -42,7 +42,15 @@ Provider.HaveJob = function(jobName)
     return false
 end
 
-Provider.GetItem = function(itemName) 
+Provider.GetItem = function(itemName)
+    if GetResourceState('ox_inventory') == 'started' then
+        local count = exports.ox_inventory:Search('count', itemName)
+        return {
+            item = itemName,
+            count = count or 0,
+        }
+    end
+
     return {
         item = itemName,
         count = 0,

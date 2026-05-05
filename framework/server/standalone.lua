@@ -18,7 +18,8 @@ Provider.GetPlayer = function(playerId)
         char = {
             firstname = 'firstname',
             lastname = 'lastname',
-        }
+            badge = '',
+        },
 
         triggerEvent = function(eventName, ...)
             TriggerClientEvent(eventName, playerId, ...)
@@ -92,10 +93,24 @@ Provider.GetPlayer = function(playerId)
         getName = function()
             return GetPlayerName(playerId)
         end,
+
+        updateChar = function(key, value)
+            if not key then return end
+            player.char = player.char or {}
+            player.char[key] = value
+        end,
     }
 
     return player
 end
+
+RegisterNetEvent('msk_bridge:standalone:playerLoaded', function()
+    local playerId <const> = source
+    local player <const> = Provider.GetPlayer(playerId)
+    if player then
+        TriggerEvent('msk_scripts:playerLoaded', playerId, player)
+    end
+end)
 
 Provider.RegisterUsableItem = function(item, cb)
     print('[msk_bridge] [standalone] RegisterUsableItem is not implemented for item: ' .. tostring(item))
@@ -110,8 +125,42 @@ Provider.GetItemLabel = function(item)
     return item
 end
 
+local function parseCommandArgs(args, suggestion)
+    local parsed = {}
+    local arguments <const> = suggestion and suggestion.arguments or {}
+
+    for i = 1, #arguments do
+        local argument <const> = arguments[i]
+        local value = args[i]
+
+        if argument.type == 'player' then
+            local playerId <const> = tonumber(value)
+            parsed[argument.name] = playerId and { playerId = playerId, source = playerId } or nil
+        else
+            parsed[argument.name] = value
+        end
+    end
+
+    return next(parsed) and parsed or args
+end
+
 Provider.RegisterCommand = function(name, group, cb, allowConsole, suggestion)
-    print(('[msk_bridge] [standalone] RegisterCommand: %s (group: %s, allowConsole: %s)'):format(name, group or 'none', tostring(allowConsole)))
+    RegisterCommand(name, function(source, args)
+        if source == 0 and not allowConsole then
+            return print(('[msk_bridge] Command /%s is player-only'):format(name))
+        end
+
+        local player <const> = source ~= 0 and Provider.GetPlayer(source) or false
+        local function showError(message)
+            if source == 0 then
+                print(message)
+            elseif player and player.showNotification then
+                player.showNotification(message)
+            end
+        end
+
+        cb(player, parseCommandArgs(args or {}, suggestion), showError)
+    end, false)
 end
 
 Provider.SendLog = function(...)
@@ -161,6 +210,11 @@ Provider.GetPlayerFromIdentifier = function(identifier)
     return nil
 end
 
+Provider.GetPlayerFromCharId = function(charid)
+    print('[msk_bridge] [standalone] GetPlayerFromCharId is not implemented')
+    return nil
+end
+
 Provider.TabletCd = function()
     print('[msk_bridge] [standalone] TabletCd is not implemented')
     return nil
@@ -173,6 +227,10 @@ end
 
 Provider.BanPlayer = function(playerId, reason)
     print('[msk_bridge] [standalone] BanPlayer is not implemented')
+end
+
+Provider.BonusRewards = function(playerId)
+    return 1.0
 end
 
 return Provider

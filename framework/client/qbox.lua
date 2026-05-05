@@ -1,9 +1,22 @@
 local Provider <const> = {}
+local Events <const> = require 'framework.client.events'
 local PlayerData = exports.qbx_core:GetPlayerData() or {}
+
+AddEventHandler('playerSpawned', function(...)
+    Events.TriggerPlayerSpawn(...)
+end)
+
+RegisterNetEvent('qb-license:client:onUpdate', function(license)
+    Events.TriggerLicensesUpdated(license)
+end)
+
+RegisterNetEvent('qbx_license:client:onUpdate', function(license)
+    Events.TriggerLicensesUpdated(license)
+end)
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     PlayerData = exports.qbx_core:GetPlayerData() or {}
-    TriggerEvent('msk_scripts:playerLoaded')
+    Events.TriggerPlayerLoaded(PlayerData)
 end)
 
 RegisterNetEvent('QBCore:Client:OnJobUpdate', function(job)
@@ -13,6 +26,11 @@ end)
 
 RegisterNetEvent('QBCore:Player:SetPlayerData', function(val)
     PlayerData = val
+
+    local licenses <const> = Events.GetPlayerLicenses(PlayerData)
+    if licenses then
+        Events.TriggerLicensesUpdated(licenses)
+    end
 end)
 
 AddEventHandler('msk_garages:hideHud', function(toggle)
@@ -60,15 +78,18 @@ end
 Provider.GetItem = function(itemName)
     if GetResourceState('ox_inventory') == 'started' then
         local count = exports.ox_inventory:Search('count', itemName)
+        local itemData <const> = exports.ox_inventory:Items(itemName)
         return {
             item = itemName,
             count = count or 0,
+            label = itemData and itemData.label or itemName,
         }
     end
 
     return {
         item = itemName,
         count = 0,
+        label = itemName,
     }
 end
 
@@ -97,7 +118,7 @@ Provider.GetVehicleLabel = GetVehicleLabel
 Provider.SetVehicleProperties = SetVehicleProperties
 Provider.GetVehicleProperties = GetVehicleProperties
 
-Provider.GetVehicleCategory = function(model)
+Provider.GetVehicleCategory = function(model, vehicle)
     return GetVehicleClassFromName(model)
 end
 
@@ -105,7 +126,7 @@ Provider.GetVehicleSeats = function(model)
     return GetVehicleModelNumberOfSeats(model)
 end
 
-Provider.GetVehicleVMax = function(model)
+Provider.GetVehicleVMax = function(model, vehicle)
     return 0.0
 end
 

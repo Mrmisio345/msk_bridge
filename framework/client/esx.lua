@@ -1,5 +1,18 @@
 local Provider <const>, ESX <const> = {}, exports['es_extended']:getSharedObject()
+local Events <const> = require 'framework.client.events'
 local PlayerData = ESX.GetPlayerData() or {}
+
+AddEventHandler('playerSpawned', function(...)
+    Events.TriggerPlayerSpawn(...)
+end)
+
+RegisterNetEvent('esx:onPlayerSpawn', function(...)
+    Events.TriggerPlayerSpawn(...)
+end)
+
+RegisterNetEvent('esx_license:onUpdate', function(license)
+    Events.TriggerLicensesUpdated(license)
+end)
 
 RegisterNetEvent('esx:playerLoaded', function(xPlayer)
     if not xPlayer then
@@ -7,7 +20,15 @@ RegisterNetEvent('esx:playerLoaded', function(xPlayer)
     end
 
     PlayerData = xPlayer
-    TriggerEvent('msk_scripts:playerLoaded') 
+    Events.TriggerPlayerLoaded(PlayerData)
+end)
+
+RegisterNetEvent('esx:setPlayerData', function(key, value)
+    PlayerData[key] = value
+
+    if key == 'licenses' or key == 'licences' then
+        Events.TriggerLicensesUpdated(value)
+    end
 end)
 
 RegisterNetEvent('esx:setJob', function(job)
@@ -55,9 +76,11 @@ end
 Provider.GetItem = function(itemName) 
     if GetResourceState('ox_inventory') == 'started' then
         local count = exports.ox_inventory:Search('count', itemName)
+        local itemData <const> = exports.ox_inventory:Items(itemName)
         return {
             item = itemName,
             count = count or 0,
+            label = itemData and itemData.label or itemName,
         }
     end
 
@@ -67,6 +90,7 @@ Provider.GetItem = function(itemName)
                 return {
                     item = data.name,
                     count = data.count,
+                    label = data.label or itemName,
                 }
             end
         end
@@ -75,6 +99,7 @@ Provider.GetItem = function(itemName)
     return {
         item = itemName,
         count = 0,
+        label = itemName,
     }
 end
 
@@ -113,7 +138,7 @@ Provider.GetVehicleLabel = GetVehicleLabel
 Provider.SetVehicleProperties = SetVehicleProperties
 Provider.GetVehicleProperties = GetVehicleProperties
 
-Provider.GetVehicleCategory = function(model) 
+Provider.GetVehicleCategory = function(model, vehicle) 
     return GetVehicleClassFromName(model)
 end
 
@@ -121,7 +146,7 @@ Provider.GetVehicleSeats = function(model)
     return GetVehicleModelNumberOfSeats(model)
 end
 
-Provider.GetVehicleVMax = function(model) 
+Provider.GetVehicleVMax = function(model, vehicle) 
     return 0.0 -- ESX doesn't have a vmax blocker
 end
 

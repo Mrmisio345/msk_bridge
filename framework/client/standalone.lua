@@ -1,6 +1,20 @@
 local Provider <const> = {}
+local Events <const> = require 'framework.client.events'
+local playerLoaded = false
 
 -- Handlers
+
+AddEventHandler('playerSpawned', function(...)
+    Events.TriggerPlayerSpawn(...)
+
+    if playerLoaded then
+        return
+    end
+
+    playerLoaded = true
+    Events.TriggerPlayerLoaded(Provider.GetPlayerData())
+    TriggerServerEvent('msk_bridge:standalone:playerLoaded')
+end)
 
 AddEventHandler('msk_garages:hideHud', function(toggle)
     TriggerEvent('radar:setHidden', toggle) 
@@ -45,15 +59,18 @@ end
 Provider.GetItem = function(itemName)
     if GetResourceState('ox_inventory') == 'started' then
         local count = exports.ox_inventory:Search('count', itemName)
+        local itemData <const> = exports.ox_inventory:Items(itemName)
         return {
             item = itemName,
             count = count or 0,
+            label = itemData and itemData.label or itemName,
         }
     end
 
     return {
         item = itemName,
         count = 0,
+        label = itemName,
     }
 end
 
@@ -96,7 +113,7 @@ Provider.GetVehicleLabel = GetVehicleLabel
 Provider.SetVehicleProperties = SetVehicleProperties
 Provider.GetVehicleProperties = GetVehicleProperties
 
-Provider.GetVehicleCategory = function(model)
+Provider.GetVehicleCategory = function(model, vehicle)
     return GetVehicleClassFromName(model)
 end
 
@@ -104,7 +121,7 @@ Provider.GetVehicleSeats = function(model)
     return GetVehicleModelNumberOfSeats(model)
 end
 
-Provider.GetVehicleVMax = function(model) 
+Provider.GetVehicleVMax = function(model, vehicle) 
     return 0.0
 end
 

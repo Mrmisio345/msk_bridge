@@ -16,6 +16,7 @@ Provider.GetPlayer = function(playerId)
         char = {
             firstname = xPlayer.get('firstName'),
             lastname = xPlayer.get('lastName'),
+            badge = '',
         },
 
         triggerEvent = function(eventName, ...)
@@ -84,8 +85,23 @@ Provider.GetPlayer = function(playerId)
         getName = function()
             return xPlayer.getName()
         end,
+
+        updateChar = function(key, value)
+            if not key then return end
+            if key == 'firstname' then
+                xPlayer.set('firstName', value)
+            elseif key == 'lastname' then
+                xPlayer.set('lastName', value)
+            else
+                xPlayer.set(key, value)
+            end
+        end,
     }
 end
+
+AddEventHandler('esx:playerLoaded', function(playerId, xPlayer)
+    TriggerEvent('msk_scripts:playerLoaded', playerId, Provider.GetPlayer(playerId) or xPlayer)
+end)
 
 Provider.RegisterUsableItem = function(item, cb)
     ESX.RegisterUsableItem(item, function(playerId)
@@ -156,6 +172,15 @@ Provider.GetPlayerFromIdentifier = function(identifier)
     return Provider.GetPlayer(xPlayer.source)
 end
 
+Provider.GetPlayerFromCharId = function(charid)
+    local xPlayer <const> = ESX.GetPlayerFromIdentifier(charid)
+    if not xPlayer then
+        return nil
+    end
+
+    return Provider.GetPlayer(xPlayer.source)
+end
+
 Provider.TabletCd = function()
     print('[msk_bridge] [esx] TabletCd is not implemented')
     return nil
@@ -176,6 +201,10 @@ end
 
 Provider.BanPlayer = function(playerId, reason)
     print('[msk_bridge] [esx] BanPlayer is not implemented')
+end
+
+Provider.BonusRewards = function(playerId)
+    return 1.0
 end
 
 return Provider

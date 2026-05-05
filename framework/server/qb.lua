@@ -1,5 +1,6 @@
 local Provider <const> = {}
 local QBCore <const> = exports['qb-core']:GetCoreObject()
+local loadedAt = {}
 
 Provider.GetPlayer = function(playerId)
     local Player <const> = QBCore.Functions.GetPlayer(playerId)
@@ -106,8 +107,54 @@ Provider.GetPlayer = function(playerId)
             end
             return GetPlayerName(playerId)
         end,
+
+        updateChar = function(key, value)
+            if not key then return end
+            local charinfoKeys <const> = { firstname = true, lastname = true, dateofbirth = true, sex = true, gender = true, height = true, nationality = true, account = true, phone = true }
+            if charinfoKeys[key] then
+                pd.charinfo = pd.charinfo or {}
+                pd.charinfo[key] = value
+                if Player.Functions and Player.Functions.SetPlayerData then
+                    Player.Functions.SetPlayerData('charinfo', pd.charinfo)
+                end
+            else
+                pd[key] = value
+                if Player.Functions and Player.Functions.SetPlayerData then
+                    Player.Functions.SetPlayerData(key, value)
+                end
+            end
+        end,
     }
 end
+
+local function triggerPlayerLoaded(playerId)
+    playerId = tonumber(playerId)
+    if not playerId then
+        return
+    end
+
+    local now <const> = GetGameTimer()
+    if loadedAt[playerId] and now - loadedAt[playerId] < 1000 then
+        return
+    end
+
+    local Player <const> = Provider.GetPlayer(playerId)
+    if not Player then
+        return
+    end
+
+    loadedAt[playerId] = now
+    TriggerEvent('msk_scripts:playerLoaded', playerId, Player)
+end
+
+RegisterNetEvent('QBCore:Server:OnPlayerLoaded', function()
+    triggerPlayerLoaded(source)
+end)
+
+AddEventHandler('QBCore:Server:PlayerLoaded', function(Player)
+    local playerData <const> = type(Player) == 'table' and Player.PlayerData or nil
+    triggerPlayerLoaded(playerData and playerData.source or source)
+end)
 
 Provider.RegisterUsableItem = function(item, cb)
     QBCore.Functions.CreateUseableItem(item, function(source)
@@ -127,12 +174,63 @@ Provider.GetItemLabel = function(item)
     return item
 end
 
+local function hasPermission(source, group)
+    if not group or group == 'user' then
+        return true
+    end
+
+    if type(group) == 'table' then
+        for _, permission in ipairs(group) do
+            if QBCore.Functions.HasPermission(source, permission) then
+                return true
+            end
+        end
+
+        return false
+    end
+
+    return QBCore.Functions.HasPermission(source, group)
+end
+
+local function parseCommandArgs(args, suggestion)
+    local parsed = {}
+    local arguments <const> = suggestion and suggestion.arguments or {}
+
+    for i = 1, #arguments do
+        local argument <const> = arguments[i]
+        local value = args[i]
+
+        if argument.type == 'player' then
+            local playerId <const> = tonumber(value)
+            parsed[argument.name] = playerId and { playerId = playerId, source = playerId } or nil
+        else
+            parsed[argument.name] = value
+        end
+    end
+
+    return next(parsed) and parsed or args
+end
+
 Provider.RegisterCommand = function(name, group, cb, allowConsole, suggestion)
     RegisterCommand(name, function(source, args)
-        if group and group ~= 'user' and not QBCore.Functions.HasPermission(source, group) then
+        if source == 0 and not allowConsole then
+            return print(('[msk_bridge] Command /%s is player-only'):format(name))
+        end
+
+        if source ~= 0 and not hasPermission(source, group) then
             return
         end
-        cb(source, args)
+
+        local xPlayer <const> = source ~= 0 and Provider.GetPlayer(source) or false
+        local function showError(message)
+            if source == 0 then
+                print(message)
+            elseif xPlayer and xPlayer.showNotification then
+                xPlayer.showNotification(message)
+            end
+        end
+
+        cb(xPlayer, parseCommandArgs(args or {}, suggestion), showError)
     end, false)
 end
 
@@ -183,6 +281,14 @@ Provider.GetPlayerFromIdentifier = function(identifier)
     return Provider.GetPlayer(Player.PlayerData.source)
 end
 
+Provider.GetPlayerFromCharId = function(charid)
+    local Player <const> = QBCore.Functions.GetPlayerByCitizenId(charid)
+    if not Player then
+        return nil
+    end
+    return Provider.GetPlayer(Player.PlayerData.source)
+end
+
 Provider.TabletCd = function()
     print('[msk_bridge] [qb] TabletCd is not implemented')
     return nil
@@ -204,6 +310,10 @@ end
 
 Provider.BanPlayer = function(playerId, reason)
     QBCore.Functions.Kick(playerId, reason or 'Banned')
+end
+
+Provider.BonusRewards = function(playerId)
+    return 1.0
 end
 
 return Provider

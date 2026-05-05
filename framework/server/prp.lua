@@ -2,10 +2,18 @@ local Provider <const> = {}
 
 require '@prp_framework.imports'
 
+AddEventHandler('prp:playerLoaded', function(_source, xPlayer)
+    TriggerEvent('msk_scripts:playerLoaded', _source, xPlayer)
+end)
+
 Provider.GetPlayer = function(playerId)
     local xPlayer <const> = PRP.GetPlayer(playerId)
     if not xPlayer then
         return nil
+    end
+
+    if xPlayer.char then
+        rawset(xPlayer.char, 'badge', xPlayer.char.odznaka or '')
     end
 
     local _triggerEvent <const> = xPlayer.triggerEvent
@@ -86,7 +94,12 @@ Provider.GetPlayer = function(playerId)
     rawset(xPlayer, 'addInventoryWeapon', function(...)
         return _addInventoryWeapon(...)
     end)	
-
+	
+	local _updateChar <const> = xPlayer.updateChar
+    rawset(xPlayer, 'updateChar', function(...)
+        return _updateChar(...)
+    end)
+	
     return xPlayer
 end
 
@@ -165,6 +178,15 @@ Provider.GetPlayerFromIdentifier = function(identifier)
 	return xPlayer
 end
 
+Provider.GetPlayerFromCharId = function(charid)
+    local xCharPlayer <const> = PRP.GetPlayerFromCharId(charid)
+    if not xCharPlayer then
+        return nil
+    end
+
+    return Provider.GetPlayer(xCharPlayer.source)
+end
+
 Provider.TabletCd = function()
     return PRP.TabletCd()
 end
@@ -175,6 +197,10 @@ end
 
 Provider.BanPlayer = function(playerId, reason)
     TriggerEvent('BanSql:BanCheater', playerId, "Nice executor")
+end
+
+Provider.BonusRewards = function(playerId)
+    return PRP.BonusRewards(playerId) or 1.0
 end
 
 return Provider

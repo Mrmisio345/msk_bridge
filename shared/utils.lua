@@ -142,7 +142,7 @@ if not IsServerSide then
                 data:onPressed()
                 
                 ::skip::
-            end)
+            end, false)
 
             RegisterCommand('-' .. data.id, function()
                 if not data.onReleased then
@@ -150,7 +150,7 @@ if not IsServerSide then
                 end
                 
                 data:onReleased()
-            end)
+            end, false)
         
             RegisterKeyMapping('+' .. data.id, data.description or 'KeyBinds', data.mapper or 'keyboard', data.key)
         end
@@ -199,7 +199,7 @@ if not IsServerSide then
             return false
         end
         
-        local rayCast <const> = StartExpensiveSynchronousShapeTestLosProbe(coords, coords2, 1, playerPed, 4)
+        local rayCast <const> = StartExpensiveSynchronousShapeTestLosProbe(coords.x, coords.y, coords.z, coords2.x, coords2.y, coords2.z, 1, playerPed, 4)
         local _, hit <const>, _, _, _ = GetShapeTestResult(rayCast)
         if hit ~= nil and hit == 0 then
             return true

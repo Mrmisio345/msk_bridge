@@ -1,10 +1,19 @@
 local Provider <const> = {}
 local QBCore <const> = exports['qb-core']:GetCoreObject()
+local Events <const> = require 'framework.client.events'
 local PlayerData = QBCore.Functions.GetPlayerData() or {}
+
+AddEventHandler('playerSpawned', function(...)
+    Events.TriggerPlayerSpawn(...)
+end)
+
+RegisterNetEvent('qb-license:client:onUpdate', function(license)
+    Events.TriggerLicensesUpdated(license)
+end)
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     PlayerData = QBCore.Functions.GetPlayerData()
-    TriggerEvent('msk_scripts:playerLoaded')
+    Events.TriggerPlayerLoaded(PlayerData)
 end)
 
 RegisterNetEvent('QBCore:Client:OnJobUpdate', function(job)
@@ -14,6 +23,11 @@ end)
 
 RegisterNetEvent('QBCore:Player:SetPlayerData', function(val)
     PlayerData = val
+
+    local licenses <const> = Events.GetPlayerLicenses(PlayerData)
+    if licenses then
+        Events.TriggerLicensesUpdated(licenses)
+    end
 end)
 
 AddEventHandler('msk_garages:hideHud', function(toggle)
@@ -61,9 +75,11 @@ end
 Provider.GetItem = function(itemName)
     if GetResourceState('ox_inventory') == 'started' then
         local count = exports.ox_inventory:Search('count', itemName)
+        local itemData <const> = exports.ox_inventory:Items(itemName)
         return {
             item = itemName,
             count = count or 0,
+            label = itemData and itemData.label or itemName,
         }
     end
 
@@ -73,6 +89,7 @@ Provider.GetItem = function(itemName)
                 return {
                     item = data.name,
                     count = data.amount or data.count or 0,
+                    label = data.label or itemName,
                 }
             end
         end
@@ -81,6 +98,7 @@ Provider.GetItem = function(itemName)
     return {
         item = itemName,
         count = 0,
+        label = itemName,
     }
 end
 
@@ -109,7 +127,7 @@ Provider.GetVehicleLabel = GetVehicleLabel
 Provider.SetVehicleProperties = SetVehicleProperties
 Provider.GetVehicleProperties = GetVehicleProperties
 
-Provider.GetVehicleCategory = function(model)
+Provider.GetVehicleCategory = function(model, vehicle)
     return GetVehicleClassFromName(model)
 end
 
@@ -117,7 +135,7 @@ Provider.GetVehicleSeats = function(model)
     return GetVehicleModelNumberOfSeats(model)
 end
 
-Provider.GetVehicleVMax = function(model)
+Provider.GetVehicleVMax = function(model, vehicle)
     return 0.0
 end
 
@@ -156,4 +174,4 @@ Provider.ToggleBelt = function(toggle)
     -- QB doesn't have a default belt system
 end
 
-return Provide
+return Provider

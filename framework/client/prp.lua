@@ -1,5 +1,14 @@
 local Provider <const>, Core <const> = {}, exports['prp_framework']:GetSharedObject()
+local Events <const> = require 'framework.client.events'
 local PlayerData = Core.PlayerData or {}
+
+AddEventHandler('prp:onPlayerSpawn', function(...)
+    Events.TriggerPlayerSpawn(...)
+end)
+
+RegisterNetEvent('prp_license:onUpdate', function(license)
+    Events.TriggerLicensesUpdated(license)
+end)
 
 RegisterNetEvent('prp:playerLoaded', function(xPlayer)
     if not xPlayer then 
@@ -7,7 +16,7 @@ RegisterNetEvent('prp:playerLoaded', function(xPlayer)
     end
 
     PlayerData = xPlayer
-    TriggerEvent('msk_scripts:playerLoaded')
+    Events.TriggerPlayerLoaded(PlayerData)
 end)
 
 RegisterNetEvent('prp:setJob', function(job)
@@ -123,9 +132,11 @@ end
 Provider.GetItem = function(itemName)
     if GetResourceState('ox_inventory') == 'started' then
         local count = exports.ox_inventory:Search('count', itemName)
+        local itemData <const> = exports.ox_inventory:Items(itemName)
         return {
             item = itemName,
             count = count or 0,
+            label = itemData and itemData.label or itemName,
         }
     end
 
@@ -135,6 +146,7 @@ Provider.GetItem = function(itemName)
                 return {
                     item = data.name,
                     count = data.count,
+                    label = data.label or itemName,
                 }
             end
         end
@@ -143,6 +155,7 @@ Provider.GetItem = function(itemName)
     return {
         item = itemName,
         count = 0,
+        label = itemName,
     }
 end
 
@@ -192,16 +205,16 @@ Provider.GetVehicleLabel = function(model)
     return name
 end
 
-Provider.GetVehicleCategory = function(model)
-    return exports['prp_vmaxblocker']:getVehicleClass(model)
+Provider.GetVehicleCategory = function(model, vehicle)
+    return exports['prp_vmaxblocker']:getVehicleClass(model, vehicle)
 end
 
 Provider.GetVehicleSeats = function(model)
     return GetVehicleModelNumberOfSeats(model)
 end
 
-Provider.GetVehicleVMax = function(model) 
-    return exports['prp_vmaxblocker']:getVehicleVMax(model)
+Provider.GetVehicleVMax = function(model, vehicle) 
+    return exports['prp_vmaxblocker']:getVehicleVMax(model, vehicle)
 end
 
 Provider.GetTrunkWeight = function(model) 

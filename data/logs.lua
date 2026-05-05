@@ -21,4 +21,7 @@ return {
 
     -- MSK PauseMenu
     ['pausemenu'] = 'https://discord.com/api/webhooks/...',
+	
+	-- MSK Music
+	['carradio'] = 'https://discord.com/api/webhooks/...',
 }
